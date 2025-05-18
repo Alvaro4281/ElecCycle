@@ -1,14 +1,25 @@
-import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, increment, arrayUnion, query, where, getDocs } from 'firebase/firestore';
-import { auth } from '../config/firebase';
-
-const db = getFirestore();
+import { 
+  collection, 
+  doc, 
+  setDoc, 
+  getDoc, 
+  updateDoc, 
+  increment, 
+  addDoc,
+  query,
+  where,
+  orderBy,
+  getDocs,
+  serverTimestamp
+} from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 // User profile related functions
 export const createUserProfile = async (userId, userData) => {
   try {
     await setDoc(doc(db, 'users', userId), {
       ...userData,
-      createdAt: new Date(),
+      createdAt: serverTimestamp(),
       recycledDevices: 0,
       totalPoints: 0,
       co2Saved: 0,
@@ -81,15 +92,15 @@ export const getCollectionPoints = async (userLocation) => {
 export const recordRecyclingActivity = async (userId, deviceData) => {
   try {
     // Add the recycling activity
-    const activityRef = doc(collection(db, 'recyclingActivities'));
-    await setDoc(activityRef, {
+    const activityRef = collection(db, 'recyclingActivities');
+    await addDoc(activityRef, {
       userId,
       deviceType: deviceData.type,
       components: deviceData.components,
       materials: deviceData.materials,
       points: deviceData.points,
       co2Saved: deviceData.co2Saved,
-      timestamp: new Date()
+      timestamp: serverTimestamp()
     });
     
     // Update user profile with new statistics
@@ -114,7 +125,11 @@ export const recordRecyclingActivity = async (userId, deviceData) => {
 // Get user recycling history
 export const getUserRecyclingHistory = async (userId) => {
   try {
-    const q = query(collection(db, 'recyclingActivities'), where('userId', '==', userId));
+    const q = query(
+      collection(db, 'recyclingActivities'),
+      where('userId', '==', userId),
+      orderBy('timestamp', 'desc')
+    );
     const querySnapshot = await getDocs(q);
     
     const activities = [];
