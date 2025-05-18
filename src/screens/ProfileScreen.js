@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,81 +6,165 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
+  Alert,
 } from 'react-native';
 import { COLORS } from '../constants/theme';
 import Header from '../components/Header';
 import ActionButton from '../components/ActionButton';
+import MenuItem from '../components/MenuItem';
+import { useAuth } from '../context/AuthContext';
+import { getUserProfile } from '../services/database';
 
 const ProfileScreen = ({ navigation }) => {
+  const { currentUser, logout } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (currentUser) {
+        try {
+          const userProfile = await getUserProfile(currentUser.uid);
+          setProfile(userProfile);
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [currentUser]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigation.navigate('Welcome');
+    } catch (error) {
+      console.error('Error logging out:', error);
+      Alert.alert('Error', 'Failed to log out. Please try again.');
+    }
+  };
+
+  if (!currentUser) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Header
+          title="Profile"
+          leftIcon="←"
+          onLeftPress={() => navigation.goBack()}
+        />
+        
+        <View style={styles.notLoggedInContainer}>
+          <Text style={styles.notLoggedInText}>
+            Please log in to view your profile
+          </Text>
+          <ActionButton
+            title="Log In"
+            onPress={() => navigation.navigate('Login')}
+            style={styles.loginButton}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Header
-        title="Profile detail"
+        title="Profile"
         leftIcon="←"
-        rightIcon="🔍"
         onLeftPress={() => navigation.goBack()}
       />
       
       <ScrollView style={styles.content}>
         <View style={styles.profileHeader}>
           <View style={styles.avatarContainer}>
-            <Text style={styles.avatarIcon}>👤</Text>
+            <Text style={styles.avatarText}>
+              {currentUser.email ? currentUser.email.charAt(0).toUpperCase() : '👤'}
+            </Text>
           </View>
           
-          <Text style={styles.profileName}>ElecCycle App</Text>
+          <Text style={styles.profileName}>
+            {profile?.name || currentUser.email || 'ElecCycle User'}
+          </Text>
           
           <View style={styles.verificationContainer}>
             <Text style={styles.checkIcon}>✓</Text>
-            <Text style={styles.verificationText}>Find Collection</Text>
+            <Text style={styles.verificationText}>Verified Recycler</Text>
           </View>
         </View>
         
-        <View style={styles.detailsContainer}>
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Component</Text>
-            <View style={styles.upgradeBadge}>
-              <Text style={styles.upgradeText}>UPGRADE PLAN</Text>
-            </View>
+        <View style={styles.statsContainer}>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{profile?.recycledDevices || 0}</Text>
+            <Text style={styles.statLabel}>Devices</Text>
           </View>
           
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Track</Text>
-            <Text style={styles.detailValue}>Circular economy progress</Text>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{profile?.totalPoints || 0}</Text>
+            <Text style={styles.statLabel}>Points</Text>
           </View>
           
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Support contact</Text>
-            <Text style={styles.detailValue}>info@eleccycle.com</Text>
-          </View>
-          
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Current time</Text>
-            <Text style={styles.detailValue}>12:05 PM</Text>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{profile?.co2Saved ? profile.co2Saved.toFixed(1) : '0'}</Text>
+            <Text style={styles.statLabel}>kg CO₂ Saved</Text>
           </View>
         </View>
         
-        <View style={styles.actionsContainer}>
-          <ActionButton
-            title="Locate"
-            onPress={() => {}}
-            primary={false}
-            style={styles.actionButton}
+        <View style={styles.menuSection}>
+          <Text style={styles.sectionTitle}>Account</Text>
+          
+          <MenuItem
+            icon="👤"
+            label="Edit Profile"
+            onPress={() => navigation.navigate('EditProfile')}
           />
           
-          <ActionButton
-            title="Scan"
-            onPress={() => {}}
-            primary={false}
-            style={styles.actionButton}
+          <MenuItem
+            icon="🏆"
+            label="Achievements"
+            onPress={() => navigation.navigate('Achievements')}
           />
           
-          <ActionButton
-            title="Track"
-            onPress={() => {}}
-            primary={false}
-            style={styles.actionButton}
+          <MenuItem
+            icon="📜"
+            label="Recycling History"
+            onPress={() => navigation.navigate('RecyclingHistory')}
           />
         </View>
+        
+        <View style={styles.menuSection}>
+          <Text style={styles.sectionTitle}>App</Text>
+          
+          <MenuItem
+            icon="⚙️"
+            label="Settings"
+            onPress={() => navigation.navigate('Settings')}
+          />
+          
+          <MenuItem
+            icon="❓"
+            label="Help & Support"
+            onPress={() => navigation.navigate('Support')}
+          />
+          
+          <MenuItem
+            icon="📝"
+            label="Terms & Privacy"
+            onPress={() => navigation.navigate('Terms')}
+          />
+        </View>
+        
+        <ActionButton
+          title="Log Out"
+          onPress={handleLogout}
+          primary={false}
+          style={styles.logoutButton}
+        />
       </ScrollView>
     </SafeAreaView>
   );
@@ -94,6 +178,21 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
+  notLoggedInContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  notLoggedInText: {
+    color: COLORS.text,
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  loginButton: {
+    width: 200,
+  },
   profileHeader: {
     alignItems: 'center',
     paddingVertical: 24,
@@ -101,84 +200,77 @@ const styles = StyleSheet.create({
   avatarContainer: {
     width: 80,
     height: 80,
-    backgroundColor: COLORS.card,
+    backgroundColor: COLORS.primary,
     borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
   },
-  avatarIcon: {
-    fontSize: 40,
+  avatarText: {
+    fontSize: 32,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   profileName: {
-    color: COLORS.text,
     fontSize: 22,
     fontWeight: 'bold',
+    color: COLORS.text,
     marginBottom: 8,
   },
   verificationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
   },
   checkIcon: {
     color: COLORS.primary,
-    fontSize: 16,
+    fontSize: 14,
     marginRight: 4,
   },
   verificationText: {
-    color: COLORS.text,
-    fontSize: 14,
-  },
-  detailsContainer: {
-    backgroundColor: COLORS.card,
-    borderRadius: 8,
-    marginHorizontal: 16,
-    marginBottom: 24,
-    padding: 16,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  detailLabel: {
-    color: COLORS.text,
-    opacity: 0.7,
-    fontSize: 14,
-  },
-  detailValue: {
-    color: COLORS.text,
-    fontSize: 14,
-    maxWidth: '60%',
-    textAlign: 'right',
-  },
-  upgradeBadge: {
-    backgroundColor: COLORS.secondary,
-    borderRadius: 4,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-  },
-  upgradeText: {
-    color: COLORS.text,
-    fontSize: 10,
+    color: COLORS.primary,
+    fontSize: 12,
     fontWeight: 'bold',
   },
-  actionsContainer: {
+  statsContainer: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.card,
+    borderRadius: 8,
+    margin: 16,
+    padding: 16,
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: COLORS.text,
+    opacity: 0.7,
+  },
+  menuSection: {
+    marginBottom: 24,
     paddingHorizontal: 16,
   },
-  actionButton: {
-    marginBottom: 12,
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: COLORS.text,
+    marginBottom: 16,
+    marginLeft: 8,
+  },
+  logoutButton: {
+    margin: 16,
+    marginBottom: 32,
   },
 });
 

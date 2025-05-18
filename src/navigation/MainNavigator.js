@@ -7,12 +7,28 @@ import { COLORS } from '../constants/theme';
 // Screens
 import WelcomeScreen from '../screens/WelcomeScreen';
 import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 import HomeScreen from '../screens/HomeScreen';
 import DisassemblyScreen from '../screens/DisassemblyScreen';
 import TasksScreen from '../screens/TasksScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import StatsScreen from '../screens/StatsScreen';
 import LearnScreen from '../screens/LearnScreen';
+import MapScreen from '../screens/MapScreen';
+import ScannerScreen from '../screens/ScannerScreen';
+import ManualEntryScreen from '../screens/ManualEntryScreen';
+import DeviceDetailScreen from '../screens/DeviceDetailScreen';
+import RecyclingHistoryScreen from '../screens/RecyclingHistoryScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
+import AchievementsScreen from '../screens/AchievementsScreen';
+import SupportScreen from '../screens/SupportScreen';
+import TermsScreen from '../screens/TermsScreen';
+import ChangePasswordScreen from '../screens/ChangePasswordScreen';
+import UpdateEmailScreen from '../screens/UpdateEmailScreen';
+
+// Auth Provider
+import { AuthProvider } from '../context/AuthContext';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -77,11 +93,10 @@ const MainTabs = () => {
   );
 };
 
-// Main Navigator
-const MainNavigator = () => {
+// Auth Stack
+const AuthStack = () => {
   return (
     <Stack.Navigator
-      initialRouteName="Welcome"
       screenOptions={{ 
         headerShown: false,
         cardStyle: { backgroundColor: COLORS.background }
@@ -89,8 +104,39 @@ const MainNavigator = () => {
     >
       <Stack.Screen name="Welcome" component={WelcomeScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+    </Stack.Navigator>
+  );
+};
+
+// Main Navigator
+const MainNavigator = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={{ 
+        headerShown: false,
+        cardStyle: { backgroundColor: COLORS.background }
+      }}
+    >
+      <Stack.Screen name="Auth" component={AuthStack} />
       <Stack.Screen name="Main" component={MainTabs} />
+      
+      {/* Profile and Settings */}
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+      <Stack.Screen name="RecyclingHistory" component={RecyclingHistoryScreen} />
+      <Stack.Screen name="Achievements" component={AchievementsScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+      <Stack.Screen name="UpdateEmail" component={UpdateEmailScreen} />
+      <Stack.Screen name="Support" component={SupportScreen} />
+      <Stack.Screen name="Terms" component={TermsScreen} />
+      
+      {/* Recycling Process */}
+      <Stack.Screen name="Map" component={MapScreen} />
+      <Stack.Screen name="Scanner" component={ScannerScreen} />
+      <Stack.Screen name="ManualEntry" component={ManualEntryScreen} />
+      <Stack.Screen name="DeviceDetail" component={DeviceDetailScreen} />
     </Stack.Navigator>
   );
 };

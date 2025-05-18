@@ -6,20 +6,70 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { COLORS } from '../constants/theme';
 import ActionButton from '../components/ActionButton';
+import { useAuth } from '../context/AuthContext';
 
 const LoginScreen = ({ navigation }) => {
+  const { login, resetPassword } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await login(email, password);
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Main' }],
+      });
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert('Error', error.message || 'Failed to log in. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = () => {
+    if (!email) {
+      Alert.alert('Error', 'Please enter your email address');
+      return;
+    }
+
+    Alert.alert(
+      'Reset Password',
+      'Are you sure you want to reset your password?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Reset', 
+          onPress: async () => {
+            try {
+              await resetPassword(email);
+              Alert.alert(
+                'Password Reset',
+                'Check your email for instructions to reset your password'
+              );
+            } catch (error) {
+              Alert.alert('Error', error.message || 'Failed to reset password');
+            }
+          } 
+        }
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.upgradeTag}>
-        <Text style={styles.upgradeText}>UPGRADE PLAN</Text>
-      </View>
-      
       <View style={styles.content}>
         <View style={styles.logoContainer}>
           <Text style={styles.logoIcon}>♻️</Text>
@@ -36,6 +86,7 @@ const LoginScreen = ({ navigation }) => {
             placeholder="Email"
             placeholderTextColor="#999"
             keyboardType="email-address"
+            autoCapitalize="none"
             value={email}
             onChangeText={setEmail}
           />
@@ -49,14 +100,18 @@ const LoginScreen = ({ navigation }) => {
             onChangeText={setPassword}
           />
           
-          <TouchableOpacity style={styles.forgotPasswordContainer}>
+          <TouchableOpacity 
+            style={styles.forgotPasswordContainer}
+            onPress={handleForgotPassword}
+          >
             <Text style={styles.forgotPassword}>Forgot your password?</Text>
           </TouchableOpacity>
           
           <ActionButton
-            title="Log In"
-            onPress={() => navigation.navigate('Main')}
+            title={loading ? "Logging in..." : "Log In"}
+            onPress={handleLogin}
             style={styles.loginButton}
+            disabled={loading}
           />
           
           <View style={styles.divider}>
@@ -68,19 +123,22 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.socialButtons}>
             <ActionButton
               title="Facebook"
-              onPress={() => {}}
+              onPress={() => Alert.alert('Coming Soon', 'Facebook login will be available in a future update.')}
               primary={false}
               style={styles.socialButton}
             />
             <ActionButton
               title="Google"
-              onPress={() => {}}
+              onPress={() => Alert.alert('Coming Soon', 'Google login will be available in a future update.')}
               primary={false}
               style={styles.socialButton}
             />
           </View>
           
-          <TouchableOpacity style={styles.createAccountContainer}>
+          <TouchableOpacity 
+            style={styles.createAccountContainer}
+            onPress={() => navigation.navigate('Register')}
+          >
             <Text style={styles.createAccount}>Create an account</Text>
           </TouchableOpacity>
         </View>
@@ -93,21 +151,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-  },
-  upgradeTag: {
-    position: 'absolute',
-    top: 40,
-    right: 20,
-    backgroundColor: COLORS.card,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-    zIndex: 1,
-  },
-  upgradeText: {
-    color: COLORS.text,
-    fontSize: 12,
-    fontWeight: 'bold',
   },
   content: {
     flex: 1,

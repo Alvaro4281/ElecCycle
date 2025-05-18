@@ -4,15 +4,18 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import MainNavigator from './src/navigation/MainNavigator';
 import { StatusBar } from 'react-native';
 import { COLORS } from './src/constants/theme';
+import { AuthProvider } from './src/context/AuthContext';
 
 const App = () => {
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
-        <MainNavigator />
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <AuthProvider>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <StatusBar barStyle="light-content" backgroundColor={COLORS.background} />
+          <MainNavigator />
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </AuthProvider>
   );
 };
 
