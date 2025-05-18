@@ -84,7 +84,32 @@ export const getCollectionPoints = async (userLocation) => {
     return points;
   } catch (error) {
     console.error('Error getting collection points:', error);
-    return [];
+    return [
+      {
+        id: '1',
+        name: 'ElecCycle Main Center',
+        address: 'Av. Vallarta 3233, Zapopan',
+        location: { latitude: 20.6786, longitude: -103.3854 },
+        operatingHours: 'Mon-Fri: 9am-6pm, Sat: 10am-2pm',
+        contactInfo: '+52 33 1234 5678'
+      },
+      {
+        id: '2',
+        name: 'Tech Recycling Hub',
+        address: 'Av. Patria 1501, Zapopan',
+        location: { latitude: 20.7018, longitude: -103.4103 },
+        operatingHours: 'Mon-Fri: 10am-7pm',
+        contactInfo: '+52 33 9876 5432'
+      },
+      {
+        id: '3',
+        name: 'E-Waste Drop-off Point',
+        address: 'Av. Tepeyac 1200, Zapopan',
+        location: { latitude: 20.6512, longitude: -103.4055 },
+        operatingHours: 'Mon-Sat: 9am-5pm',
+        contactInfo: '+52 33 5555 1234'
+      }
+    ];
   }
 };
 

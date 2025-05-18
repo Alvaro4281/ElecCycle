@@ -14,7 +14,7 @@ import TasksScreen from '../screens/TasksScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import StatsScreen from '../screens/StatsScreen';
 import LearnScreen from '../screens/LearnScreen';
-import MapScreen from '../screens/MapScreen';
+//import MapScreen from '../screens/MapScreen';
 import ScannerScreen from '../screens/ScannerScreen';
 import ManualEntryScreen from '../screens/ManualEntryScreen';
 import DeviceDetailScreen from '../screens/DeviceDetailScreen';
@@ -26,6 +26,7 @@ import SupportScreen from '../screens/SupportScreen';
 import TermsScreen from '../screens/TermsScreen';
 import ChangePasswordScreen from '../screens/ChangePasswordScreen';
 import UpdateEmailScreen from '../screens/UpdateEmailScreen';
+import CollectionPointsScreen from '../screens/CollectionPointsScreen';
 
 // Auth Provider
 import { AuthProvider } from '../context/AuthContext';
@@ -133,7 +134,7 @@ const MainNavigator = () => {
       <Stack.Screen name="Terms" component={TermsScreen} />
       
       {/* Recycling Process */}
-      <Stack.Screen name="Map" component={MapScreen} />
+      <Stack.Screen name="CollectionPoints" component={CollectionPointsScreen} />
       <Stack.Screen name="Scanner" component={ScannerScreen} />
       <Stack.Screen name="ManualEntry" component={ManualEntryScreen} />
       <Stack.Screen name="DeviceDetail" component={DeviceDetailScreen} />

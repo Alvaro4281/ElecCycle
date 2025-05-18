@@ -10,15 +10,15 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "@react-native-async-storage/async-storage": "^1.24.0",
+    "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/geolocation": "^3.4.0",
-    "@react-native-firebase/firestore": "^22.2.0",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
     "expo": "~53.0.9",
     "expo-barcode-scanner": "^13.0.1",
     "expo-camera": "^16.1.6",
+    "expo-location": "~18.1.5",
     "expo-status-bar": "~2.2.3",
     "firebase": "^11.7.3",
     "react": "19.0.0",
@@ -32,7 +32,8 @@
     "react-native-svg": "14.1.0",
     "react-navigation": "^4.4.4",
     "react-navigation-stack": "^2.10.4",
-    "tailwind-react-native-classnames": "^3.0.1"
+    "tailwind-react-native-classnames": "^3.0.1",
+    "undefined": "firebase/auth"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
