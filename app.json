@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "ElecCycle",
-    "slug": "ElecCycle",
+    "slug": "elecCycle",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

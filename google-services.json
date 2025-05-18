@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "260897654498",
+    "project_id": "eleccycle",
+    "storage_bucket": "eleccycle.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:260897654498:android:07ea7157eccc9bd1d240bb",
+        "android_client_info": {
+          "package_name": "com.eleccycle.eleccycle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDeFy3IxNWZSiIJn0x0KmkUFE74a8i87-s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
